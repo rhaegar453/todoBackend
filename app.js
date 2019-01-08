@@ -8,13 +8,15 @@ var fileUpload=require('express-fileupload');
 var fs=require('fs')
 var respond=require('./config/respond');
 
-
+require('dotenv').config();
 var auth=require('./routes/auth');
 var tasks=require('./routes/task');
 var indexRoutes=require('./routes/index');
 
+
+var mongoURI="mongodb://"+process.env.dbusername+":"+process.env.dbpassword+"@ds060749.mlab.com:60749/todoapplication123";
 var mongoose=require('mongoose');
-mongoose.connect('mongodb://localhost/simpleToDo').then((data)=>console.log('Successfully connected to mongo')).
+mongoose.connect(mongoURI).then((data)=>console.log('Successfully connected to mongo')).
 catch((err)=>{
   console.log('Something went wrong', err);
 });
