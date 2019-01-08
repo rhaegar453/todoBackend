@@ -11,7 +11,7 @@ var respond=require('./config/respond');
 
 var auth=require('./routes/auth');
 var tasks=require('./routes/task');
-
+var indexRoutes=require('./routes/indexRoutes');
 
 var mongoose=require('mongoose');
 mongoose.connect('mongodb://localhost/simpleToDo').then((data)=>console.log('Successfully connected to mongo')).
@@ -32,6 +32,8 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({'extended':'false'}));
 app.use(express.static(path.join(__dirname, 'build')));
 
+
+app.use('/', indexRoutes);
 app.use('/api/auth', auth);
 app.use('/api/tasks', tasks);
 
