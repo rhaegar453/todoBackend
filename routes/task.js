@@ -1,6 +1,6 @@
 var mongoose=require('mongoose');
 var passport=require('passport');
-
+require('../config/passport')(passport);
 var settings=require('../config/settings');
 var express=require('express');
 var jwt=require('jsonwebtoken');
@@ -29,13 +29,13 @@ function getDetails(token) {
         id: value._id
     };
 }
-
+//Works
 router.post('/newTask', passport.authenticate('jwt', {session:false}),(req, res)=>{
     var token=getToken(req.headers);
     var details=getDetails(token);
     if(token){
         var newTask=new Task({
-            name:req.body.name,
+            title:req.body.title,
             description:req.body.description,
             startDate:req.body.startDate,
             endDate:req.body.endDate,
@@ -51,6 +51,7 @@ router.post('/newTask', passport.authenticate('jwt', {session:false}),(req, res)
 });
 
 //Get all my tasks
+//Works 
 router.get('/',passport.authenticate('jwt', {session:false}), (req, res)=>{
     var token=getToken(req.headers);
     var details=getDetails(token);
@@ -64,6 +65,7 @@ router.get('/',passport.authenticate('jwt', {session:false}), (req, res)=>{
 });
 
 //Edit a particular task
+//Works 
 router.put('/:id', passport.authenticate('jwt', {session:false}), (req, res)=>{
     var token=getToken(req.headers);
     var details=getDetails(token);

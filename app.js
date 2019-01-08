@@ -6,8 +6,12 @@ var bodyParser=require('body-parser');
 var formidable=require('express-formidable');
 var fileUpload=require('express-fileupload');
 var fs=require('fs')
+var respond=require('./config/respond');
+
 
 var auth=require('./routes/auth');
+var tasks=require('./routes/task');
+
 
 var mongoose=require('mongoose');
 mongoose.connect('mongodb://localhost/simpleToDo').then((data)=>console.log('Successfully connected to mongo')).
@@ -29,13 +33,14 @@ app.use(bodyParser.urlencoded({'extended':'false'}));
 app.use(express.static(path.join(__dirname, 'build')));
 
 app.use('/api/auth', auth);
+app.use('/api/tasks', tasks);
 
 
 app.use(function(err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   res.status(err.status || 500);
-  res.render('error');
+  res.json(respond(false, "Error Occured"+err.message));
 });
 
 module.exports = app;

@@ -3,7 +3,10 @@ var Schema=mongoose.Schema;
 
 
 var taskSchema=new Schema({
-    name:String,
+    title:{
+        type:String,
+        unique:true
+    },
     createdDate:{
         type:Date,
         default:Date.now()
@@ -20,6 +23,7 @@ var taskSchema=new Schema({
         required:true
     }
 });
+
 
 
 module.exports=mongoose.model('task', taskSchema);
