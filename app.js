@@ -11,7 +11,7 @@ var respond=require('./config/respond');
 
 var auth=require('./routes/auth');
 var tasks=require('./routes/task');
-var indexRoutes=require('./routes/indexRoutes');
+var indexRoutes=require('./routes/index');
 
 var mongoose=require('mongoose');
 mongoose.connect('mongodb://localhost/simpleToDo').then((data)=>console.log('Successfully connected to mongo')).
