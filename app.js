@@ -7,6 +7,7 @@ var formidable=require('express-formidable');
 var fileUpload=require('express-fileupload');
 var fs=require('fs')
 var respond=require('./config/respond');
+var cors=require('cors');
 
 require('dotenv').config();
 var auth=require('./routes/auth');
@@ -29,6 +30,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 
+app.use(cors());
 app.use(logger('dev'));
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({'extended':'false'}));

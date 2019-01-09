@@ -33,6 +33,7 @@ router.post('/register', (req, res)=>{
 });
 
 router.post('/login', function(req, res) {
+    console.log(req.body);
     User.findOne({
       email: req.body.email
     }, function(err, user) {
