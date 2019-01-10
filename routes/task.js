@@ -33,11 +33,11 @@ function getDetails(token) {
 router.post('/newTask', passport.authenticate('jwt', {session:false}),(req, res)=>{
     var token=getToken(req.headers);
     var details=getDetails(token);
+    console.log(req.body);
     if(token){
         var newTask=new Task({
             title:req.body.title,
             description:req.body.description,
-            startDate:req.body.startDate,
             endDate:req.body.endDate,
             createdBy:details.id
         });
@@ -55,8 +55,9 @@ router.post('/newTask', passport.authenticate('jwt', {session:false}),(req, res)
 router.get('/',passport.authenticate('jwt', {session:false}), (req, res)=>{
     var token=getToken(req.headers);
     var details=getDetails(token);
+    console.log("Headers",req.headers);
     if(token){
-        Task.find({createdBy:details.id}).then(data=>{
+        Task.find({createdBy:details.id}).sort({createdDate:-1}).then(data=>{
             return res.json(respond(true, data));
         }).catch(err=>{
             return res.json(respond(false, err));
@@ -76,7 +77,8 @@ router.put('/:id', passport.authenticate('jwt', {session:false}), (req, res)=>{
             description:req.body.description,
             startDate:req.body.startDate,
             endDate:req.body.endDate,
-            createdBy:details.id
+            createdBy:details.id,
+            createdDate:Date.now()
         }
 
         Task.update({_id:req.params.id}, updatedTask, {upsert:true, new:true}).then(data=>{
@@ -86,5 +88,17 @@ router.put('/:id', passport.authenticate('jwt', {session:false}), (req, res)=>{
         });
     }
 });
+
+router.delete('/delete', passport.authenticate('jwt', {session:false}),(req, res)=>{
+    var token=getToken(req.headers);
+    var details=getDetails(token);
+    if(token){
+        Task.deleteOne({_id:req.headers.id}).then(data=>{
+            return res.json(data);
+        }).catch(err=>{
+            res.json(err);
+        });
+    }
+})
 
 module.exports=router;
