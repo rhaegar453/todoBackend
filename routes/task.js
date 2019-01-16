@@ -33,7 +33,6 @@ function getDetails(token) {
 router.post('/newTask', passport.authenticate('jwt', {session:false}),(req, res)=>{
     var token=getToken(req.headers);
     var details=getDetails(token);
-    console.log(req.body);
     if(token){
         var newTask=new Task({
             title:req.body.title,
@@ -43,9 +42,10 @@ router.post('/newTask', passport.authenticate('jwt', {session:false}),(req, res)
         });
     
         newTask.save().then(data=>{
-            return res.json(respond(true, data));
+            return res.status(200).json(respond(true,data));
         }).catch(err=>{
-            return res.json(respond(false, err));
+            console.log(err);
+            return res.status(400).json(respond(false, {message:"Something went wrong"}));
         });
     }
 });
@@ -55,36 +55,34 @@ router.post('/newTask', passport.authenticate('jwt', {session:false}),(req, res)
 router.get('/',passport.authenticate('jwt', {session:false}), (req, res)=>{
     var token=getToken(req.headers);
     var details=getDetails(token);
-    console.log("Headers",req.headers);
+    new Error('make something wrong')
     if(token){
-        Task.find({createdBy:details.id}).sort({createdDate:-1}).then(data=>{
-            return res.json(respond(true, data));
+        Task.find({createdBy:details.id}).sort({createdDate:-1}).limit(10).then(data=>{
+            return res.status(200).json(respond(true, data, 200));
         }).catch(err=>{
-            return res.json(respond(false, err));
+            return res.status(400).json(respond(false, err));
         });
     }
 });
 
 //Edit a particular task
 //Works 
-router.put('/:id', passport.authenticate('jwt', {session:false}), (req, res)=>{
+router.put('/update', passport.authenticate('jwt', {session:false}), (req, res)=>{
     var token=getToken(req.headers);
     var details=getDetails(token);
 
     if(token){
         var updatedTask={
-            name:req.body.name,
+            title:req.body.name,
             description:req.body.description,
-            startDate:req.body.startDate,
             endDate:req.body.endDate,
             createdBy:details.id,
             createdDate:Date.now()
         }
-
-        Task.update({_id:req.params.id}, updatedTask, {upsert:true, new:true}).then(data=>{
-            return res.json(data);
+        Task.update({_id:req.headers.id}, updatedTask, {upsert:true, new:true}).then(data=>{
+            return res.status(200).json(data);
         }).catch(err=>{
-            return res.json(err);
+            return res.status(400).json(err);
         });
     }
 });
@@ -94,9 +92,15 @@ router.delete('/delete', passport.authenticate('jwt', {session:false}),(req, res
     var details=getDetails(token);
     if(token){
         Task.deleteOne({_id:req.headers.id}).then(data=>{
-            return res.json(data);
+            console.log(data);
+            if(data.n==1){
+                return res.status(200).json(respond(true,{message:"Deleted Successfully",id:req.headers.id}));
+            }
+            else {
+                return res.status(400).json(respond(false, {message:"This item doesnt exist"}))
+            }
         }).catch(err=>{
-            res.json(err);
+            res.status(400).json(err);
         });
     }
 })
